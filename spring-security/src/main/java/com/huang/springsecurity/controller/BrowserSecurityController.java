@@ -31,4 +31,10 @@ public class BrowserSecurityController {
         }
         return "访问的资源需要身份认证！"; // 否则返回”访问的资源需要身份认证！”信息,并且HTTP状态码为401（HttpStatus.UNAUTHORIZED）
     }
+
+    @GetMapping("/session/invalid")
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String sessionInvalid(){
+        return "session已失效，请重新认证";
+    }
 }
