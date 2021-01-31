@@ -1,6 +1,7 @@
 package com.huang.springsecurity.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -36,5 +37,11 @@ public class BrowserSecurityController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public String sessionInvalid(){
         return "session已失效，请重新认证";
+    }
+
+    @GetMapping("/auth/admin")
+    @PreAuthorize("hasAuthority('admin')")
+    public String authenticationTest(){
+        return "您拥有admin权限，可以查看";
     }
 }

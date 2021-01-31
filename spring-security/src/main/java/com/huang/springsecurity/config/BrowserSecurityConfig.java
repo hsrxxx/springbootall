@@ -2,6 +2,7 @@ package com.huang.springsecurity.config;
 
 import com.huang.springsecurity.filter.SmsCodeFilter;
 import com.huang.springsecurity.filter.ValidateCodeFilter;
+import com.huang.springsecurity.handler.MyAuthenticationAccessDeniedHandler;
 import com.huang.springsecurity.handler.MyAuthenticationFailureHandler;
 import com.huang.springsecurity.handler.MyAuthenticationSucessHandler;
 import com.huang.springsecurity.handler.MyLogOutSuccessHandler;
@@ -46,6 +47,9 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     private MyLogOutSuccessHandler myLogOutSuccessHandler;
 
     @Autowired
+    private MyAuthenticationAccessDeniedHandler authenticationAccessDeniedHandler;
+
+    @Autowired
     private DataSource dataSource;
 
     @Override
@@ -60,6 +64,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(authenticationSucessHandler) // 处理登录成功的方法
                 .failureHandler(authenticationFailureHandler) // 处理登陆失败的方法
             .and()
+                // 处理权限不足时的逻辑
+                .exceptionHandling()
+                .accessDeniedHandler(authenticationAccessDeniedHandler)
+            .and()
                 // 退出登陆
                 .logout()
                 .logoutUrl("/signout")
@@ -69,7 +77,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(myLogOutSuccessHandler)
                 // 退出登陆后删除Cookies中的JSESSIONID
                 .deleteCookies("JSESSIONID")
-                .and()
+            .and()
                 //
                 .rememberMe()
                 .tokenRepository(persistentTokenRepository()) // 配置 token 持久化仓库
@@ -87,7 +95,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/session/invalid").permitAll() // 跳转到登陆页面的请求不拦截，否则无限循环
                 .anyRequest()  // 所有请求
                 .authenticated() // 都需要验证
-                .and()
+            .and()
                 .sessionManagement() // 添加 Session管理器
                 .invalidSessionUrl("/session/invalid") // Session失效后跳转到这个链接
                 .and().csrf().disable() // 关闭CSRF攻击防御
